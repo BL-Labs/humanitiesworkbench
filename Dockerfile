@@ -1,14 +1,24 @@
 # Distributed under the terms of the MIT Licence
 
-FROM jupyter/scipy-notebook
+FROM jupyter/base-notebook
+
+# not basing it on scipy-notebook, as that increases the image size to 2GB from a few hundred MB
 
 LABEL maintainer="Ben O'Steen <bosteen@gmail.com>"
 
 USER root
 
 # Get nltk through the package manager due to its wrappers and whatnot
+# ffmpeg for matplotlib animations
+# other tools included to round things out.
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends python3-nltk && \
+    apt-get install -y --no-install-recommends  \
+	python3-nltk  \
+	unzip  \
+	python-dev  \
+	git  \
+	nano  \
+	ffmpeg && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -16,9 +26,11 @@ USER $NB_USER
 
 # install some viz and text tool libraries
 # Versions are aligned with those from the wragge/glamworkbench where possible
-# but note that the scipy-notebook will install a number of these with its own 
+# but note that alignment with scipy-notebook is also preferred for these.
+# 
 # version requirements.
 RUN conda install --quiet --yes \
+	'conda-forge::blas=*=openblas' \
     'requests==2.18.4'  \
     'numpy==1.14.2'  \
     'plotly==2.5.1'  \
@@ -29,11 +41,44 @@ RUN conda install --quiet --yes \
     'wordcloud==1.4.1'  \
     'textblob==0.15.1'  \
     'ipyleaflet==0.8.1'  \
-    'chardet' && \
+    'chardet'  \
+    'ipywidgets=7.2*' \
+    'pandas=0.22*' \
+    'numexpr=2.6*' \
+    'matplotlib=2.1*' \
+    'scipy=1.0*' \
+    'seaborn=0.8*' \
+    'scikit-learn=0.19*' \
+    'scikit-image=0.13*' \
+    'sympy=1.1*' \
+    'cython=0.28*' \
+    'patsy=0.5*' \
+    'statsmodels=0.8*' \
+    'cloudpickle=0.5*' \
+    'dill=0.2*' \
+    'numba=0.38*' \
+    'bokeh=0.12*' \
+    'sqlalchemy=1.2*' \
+    'hdf5=1.10*' \
+    'h5py=2.7*' \
+    'vincent=0.4.*' \
+    'beautifulsoup4=4.6.*' \
+    'protobuf=3.*' \
+    'xlrd'  && \
+    conda remove --quiet --yes --force qt pyqt && \
     conda clean -tipsy &&  \
+    # Activate ipywidgets extension in the environment that runs the notebook server
+    jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
+    # Also activate ipywidgets extension for JupyterLab
+    jupyter labextension install @jupyter-widgets/jupyterlab-manager@^0.35 && \
+    jupyter labextension install jupyterlab_bokeh@^0.5.0 && \
     npm cache clean --force && \
+    rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
+    rm -rf /home/$NB_USER/.cache/yarn && \
+    rm -rf /home/$NB_USER/.node-gyp && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
+
 
 # Add RUN statements to install packages as the $NB_USER defined in the base images.
 
