@@ -24,11 +24,12 @@ RUN apt-get update && \
 
 USER $NB_USER
 
-# install some viz and text tool libraries
-# Versions are aligned with those from the wragge/glamworkbench where possible
+# install some viz and text tool libraries alongside the scipy python libraries
+# Versions are aligned with those from the wragge/ozglam-workbench where possible
 # but note that alignment with scipy-notebook is also preferred for these.
-# 
+# base libraries drawn from https://github.com/jupyter/docker-stacks/blob/master/scipy-notebook/Dockerfile
 # version requirements.
+# NB Shapely (geometric toolkit, useful for GIS/map manipulations) is only at 1.5.13 on conda sadly
 RUN conda install --quiet --yes \
 	'conda-forge::blas=*=openblas' \
     'requests==2.18.4'  \
@@ -38,6 +39,7 @@ RUN conda install --quiet --yes \
     'tinydb==3.8.1.post1'  \
     'robobrowser==0.5.3'  \
     'lxml==4.2.1'  \
+	'shapely'  \
     'wordcloud==1.4.1'  \
     'textblob==0.15.1'  \
     'ipyleaflet==0.8.1'  \
