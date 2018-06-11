@@ -81,6 +81,9 @@ RUN conda install --quiet --yes \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
+# Get data- or source-specific helper libraries
+# Might have to fall back onto pip for some of these...
+RUN pip install troveharvester
 
 # Add RUN statements to install packages as the $NB_USER defined in the base images.
 
