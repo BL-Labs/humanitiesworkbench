@@ -69,10 +69,12 @@ RUN conda install --quiet --yes \
     'xlrd'  && \
     conda remove --quiet --yes --force qt pyqt && \
     conda clean -tipsy &&  \
-    # Activate ipywidgets extension in the environment that runs the notebook server
+    # Activate ipywidgets and ipyleaflet extension in the environment that runs the notebook server
     jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
+	jupyter nbextension enable --py --sys-prefix ipyleaflet && \
     # Also activate ipywidgets extension for JupyterLab
     jupyter labextension install @jupyter-widgets/jupyterlab-manager@^0.35 && \
+	jupyter labextension install jupyter-leaflet && \
     jupyter labextension install jupyterlab_bokeh@^0.5.0 && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
