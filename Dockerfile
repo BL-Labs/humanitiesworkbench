@@ -22,6 +22,10 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# To aid persistence and to simplify docker-compose steps which don't have access
+# to $NB_USER env variable:
+RUN ln -s /home/$NB_USER /workspace
+
 USER $NB_USER
 
 # install some viz and text tool libraries alongside the scipy python libraries
