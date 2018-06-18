@@ -24,7 +24,7 @@ RUN apt-get update && \
 
 # To aid persistence and to simplify docker-compose steps which don't have access
 # to $NB_USER env variable:
-RUN rm -rf /home/$NB_USER/work
+RUN rm -rf /home/$NB_USER/work && \
     mkdir /work && \
 	fix-permissions /work && \
 	ln -s /work /home/$NB_USER/work
